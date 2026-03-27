@@ -1,0 +1,529 @@
+/* REXX */
+
+signal on novalue
+signal on syntax
+
+false = 0
+true  = 1
+
+/* TEMP TEMP TEMP */
+/* REXX */
+parse arg a
+trace off
+
+infoline2a = "Prefx Cmd   Filename Filetype Fm  Format    Recs Blocks    Date    Time  Label"
+
+address "EE" "EXTRACT /lscreen/"
+screen_width = lscreen.2
+hard_limit_screen_width = 40
+
+if screen_width < hard_limit_screen_width then do
+  address "EE" "MSG" "FILELIST: Screen width must be" hard_limit_screen_width "or larger"
+  exit -2
+end
+else if screen_width >= 80 /* prefix=5+1+maxinfo=73+1 */ then do
+  prefix = "LEFT"
+  worklrecl = 73
+  infoline2b = infoline2a;
+  address "EE" "number on"
+end
+else if screen_width >= 74 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 73
+  infoline2b = substr(infoline2a,7);
+end
+else if screen_width >= 67 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 66
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+else do
+  prefix = "OFF"
+  worklrecl = screen_width-1
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+
+
+
+
+address "COMMAND" "SENTRIES"
+stacked_old = rc
+address "COMMAND" "MAKEBUF"
+new_buffer_id = rc
+
+address "COMMAND" "LISTFILE" a "(LABEL ISODATE FIFO"
+rc_listfile = rc
+if rc_listfile <> 0 then do
+  address "COMMAND" "DROPBUF" new_buffer_id
+  exit rc_listfile
+end
+
+address "COMMAND" "SENTRIES"
+stacked_new = rc
+address "EE" "X" userid() "FILELIST A1"
+address "EE" "EXTRACT /line/"
+line_old = line.1
+do i = 1 to stacked_new-stacked_old
+  /*
+  parse pull from_listfile
+  address "EE" "INPUT" from_listfile
+  */
+  aaa = 3 * 17
+  parse pull =1 part1 =44 . =46 part2 =62 . =64 part3 =70 part_extra
+  bbb = 9 * 13
+  address "EE" "INPUT" "     " part1 part2 part3 part1 part2 part3
+end
+address "COMMAND" "DROPBUF" new_buffer_id
+
+address "EE" "LOCATE :"line_old
+
+address "EE" "WORKL" worklrecl
+address "EE" "PREFIX" prefix
+address "EE" "SCALE OFF"
+address "EE" "CURRLINE TOP"
+address "EE" "CMDLINE TOP"
+address "EE" "TOFEOF OFF"
+address "EE" "SET COLOR infolines blue"
+address "EE" "set color idline white"
+address "EE" "set color statarea white"
+address "EE" "EXTRACT /line/"
+line_old = line.1
+
+
+address "EE" "infolines clear"
+address "EE" "infolines top"
+address "EE" "infolines add" infoline2b
+address "EE" "infolines add" "."
+/*
+address "EE" "infolines add 13/14=-+TS 15/16=-+SIZE 17/18=+-FILEID 19/20=+-CLASS 21/22=UserNode 23=-SPOOLID"
+*/
+address "EE" "infolines add 13=+FN 14=+FT 15=+FM 16=-TS 17/18=-+Rec 19/20=-+Blk 21=+Fmt 22=+Lbl 23=+TS"
+
+address "EE" "PF 13 VIEW BEFORE" "SORTFILE  7  14"
+address "EE" "PF 14 VIEW BEFORE" "SORTFILE  16 23"
+address "EE" "PF 15 VIEW BEFORE" "SORTFILE  25 26"
+address "EE" "PF 16 VIEW BEFORE" "SORTFILE -51 66"
+
+address "EE" "PF 17 VIEW BEFORE" "SORTFILE -37 42"
+address "EE" "PF 18 VIEW BEFORE" "SORTFILE  37 42"
+address "EE" "PF 19 VIEW BEFORE" "SORTFILE -44 49"
+address "EE" "PF 20 VIEW BEFORE" "SORTFILE  44 49"
+
+address "EE" "PF 21 VIEW BEFORE" "SORTFILE  29 35"
+address "EE" "PF 22 VIEW BEFORE" "SORTFILE  68 73"
+address "EE" "PF 23 VIEW BEFORE" "SORTFILE  51 66"
+
+address "EE" "PF 00 VIEW IGNORE" "EXECUTE CURSOR"
+exit rc_listfile
+exit
+/* TEMP TEMP TEMP */
+
+hard_limit_screen_width = 40
+
+infoline2a = "Prefx Cmd   Filename Filetype Class User  at Node     Hold Records    Date     Time   SpID Cy Distcode"
+infoline2a = "Prefx Cmd   Filename Filetype Fm Format Lrecl    Records     Blocks   Date     Time   Label"
+
+address "EE" "EXTRACT /lscreen/"
+/* DEBUG */ /** / lscreen.2 = 39 / **/
+
+screen_width = lscreen.2
+if screen_width < hard_limit_screen_width then do
+  address "EE" "MSG" "RDRLIST: Screen width must be" hard_limit_screen_width "or larger"
+  exit -2
+end
+else if screen_width >= 103 /* prefix=5+1+maxinfo=96+1 */ then do
+  prefix = "LEFT"
+  worklrecl = 96
+  infoline2b = infoline2a;
+  address "EE" "number on"
+end
+else if screen_width >= 97 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 96
+  infoline2b = substr(infoline2a,7);
+end
+else if screen_width >= 88 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 87
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+else if screen_width >= 85 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 84
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+else if screen_width >= 80 /* prefix=0+0+maxinfo=96+1 */ then do
+  prefix = "OFF"
+  worklrecl = 79
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+else do
+  prefix = "OFF"
+  worklrecl = screen_width-1
+  infoline2b = substr(infoline2a,7,worklrecl);
+end
+
+
+
+address "COMMAND" "IDENTIFY ( LIFO"
+parse pull user_id . local_node . rscs_id .
+if strip(user_id) <> strip(userid()) then exit -777 /* IDENTIFY failure ? */
+rscs_id     = left(rscs_id    || '        ',8)
+local_node  = left(local_node || '        ',8)
+/*
+MECAFF   AT VM370CE  VIA RSCS     13:05:31 12/25/24 GMT     WEDNESDAY
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....
+*/
+
+spool_userid = "*"
+address "COMMAND" "EXECIOT * CP ( STEM CP_Q_FILES. STRING QUERY FILES" spool_userid
+rc_save = rc
+if (rc_save = 0) then do
+  spool_operater_privilege = true
+  address "COMMAND" "EXECIOT * CP ( STEM CP_Q_FILES_SYSTEM. STRING QUERY FILES"
+end
+else do
+  spool_operater_privilege = false
+  spool_userid = ""
+  CP_Q_FILES_SYSTEM.0 = 0
+  CP_Q_FILES_SYSTEM.1 = ""
+  address "COMMAND" "EXECIOT * CP ( STEM CP_Q_FILES. STRING QUERY FILES"
+end
+
+/*
+address "EE" "input" rc_save spool_operater_privilege spool_userid
+address "EE" "input" CP_Q_FILES.0 CP_Q_FILES_SYSTEM.0
+address "EE" "input" CP_Q_FILES.1 CP_Q_FILES_SYSTEM.1
+exit rc_save
+*/
+
+address "COMMAND" "SENTRIES"
+stacked_old = rc
+address "COMMAND" "MAKEBUF"
+new_buffer_id = rc
+
+/*
+address "COMMAND" "QUERY RDR ALL ( FIFO"
+address "COMMAND" "QUERY RDR     ( FIFO"
+*/
+address "COMMAND" "EXECUTIL QREADER"
+rc_executil = rc
+if rc_executil <> 0 then do
+  address "COMMAND" "DROPBUF" new_buffer_id
+  exit rc_executil
+end
+
+address "COMMAND" "SENTRIES"
+stacked_new = rc
+address "EE" "X" userid() "RDRLIST  A1"
+address "EE" "LRECL 255"
+address "EE" "WORKL" worklrecl
+address "EE" "PREFIX" prefix
+address "EE" "SCALE OFF"
+address "EE" "CURRLINE TOP"
+address "EE" "CMDLINE TOP"
+address "EE" "TOFEOF OFF"
+address "EE" "SET COLOR infolines blue"
+address "EE" "set color idline white"
+address "EE" "set color statarea white"
+address "EE" "EXTRACT /line/"
+line_old = line.1
+
+
+address "EE" "infolines clear"
+address "EE" "infolines top"
+address "EE" "infolines add" infoline2b
+address "EE" "infolines add" "."
+address "EE" "infolines add 13/14=-+TS 15/16=-+SIZE 17/18=+-FILEID 19/20=+-CLASS 21/22=UserNode 23=-SPOOLID"
+/* address "EE" "cmdline bottom" */
+
+address "EE" "PF 13 VIEW BEFORE" "SORTFILE -61 79"
+address "EE" "PF 14 VIEW BEFORE" "SORTFILE  61 79"
+address "EE" "PF 15 VIEW BEFORE" "SORTFILE -54 59"
+address "EE" "PF 16 VIEW BEFORE" "SORTFILE  54 59"
+address "EE" "PF 17 VIEW BEFORE" "SORTFILE  7  23"
+address "EE" "PF 18 VIEW BEFORE" "SORTFILE -7  23"
+address "EE" "PF 19 VIEW BEFORE" "SORTFILE  29 29"
+address "EE" "PF 20 VIEW BEFORE" "SORTFILE -29 29"
+address "EE" "PF 21 VIEW BEFORE" "SORTFILE  31 38"
+address "EE" "PF 22 VIEW BEFORE" "SORTFILE  40 47"
+address "EE" "PF 23 VIEW BEFORE" "SORTFILE -81 84"
+
+address "EE" "PF 00 VIEW IGNORE" "EXECUTE CURSOR"
+
+
+/** /
+address "EE" "prefix left"
+address "EE" "number on"
+address "EE" "workl 96"
+address "EE" "infolines clear"
+address "EE" "infolines top"
+address "EE" "infolines add ===== ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+."
+address "EE" "infolines add Prefx Cmd   Filename Filetype Class User  at Node     Hold Records    Date     Time   SpID Cy Distcode"
+/ **/
+
+
+
+
+/*
+Cmd   Filename Filetype Class User  at Node     Hold Records    Date     Time
+      AXSLINKS COPY     PUN A LORENZO  SDFVM    NONE      5 2024-12-25 01:24:44 1752  1 RSCS
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+..
+      (none)   (none)   CON T MECAFF   VM370CE  NONE   4874 2024-08-14 12:22:22 1588  1 MECAFF
+      RECEIVE  TEMP     RDR N MECAFF   VM370CE  NONE   1934 2024-10-06 04:05:55 1676  1 MECAFF
+      SENDFILE TEMP     RDR N MAINT    VM370CE  NONE   2383 2022-10-09 16:56:28 1331  1 MAINT
+*/
+
+/*
+ORIGINID FILE CLASS RECDS  CPY HOLD DATE  TIME     NAME        TYPE     DIST
+MECAFF   1685 N PUN 000531  99 NONE 10/06 14:50:31 RXUSERFN    ASSEMBLE DISTCODE
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+1685 N 531    99 RDR NONE MECAFF   10/06/24 14:50:31 DISTCODE RXUSERFN ASSEMBLE
+1435 T 6      1  CON NONE MAINT    10/14/22 06:39:01 MAINT
+1436 T 22     1  CON NONE MAINT    10/14/22 06:39:52 MAINT
+1656 A 226    1  PRT NONE MVS      10/03/24 16:43:46 MVS
+*/
+
+/*
+Cmd   Filename Filetype Class User  at Node     Hold  Records  Date      Time
+      TEST0001 NETDATA  PUN A LORENZO  SDFVM    NONE       65 10/05    06:11:06
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+      RXUSERFN ASSEMBLE PUN A LORENZO  SDFVM    NONE      531 10/06    07:34:06
+      HELPXED  XEDIT    PUN A LORENZO  SDFVM    NONE      699 10/10    12:16:30
+      (none)   (none)   CON T LORENZO  SDFVM    NONE      176 10/31    09:24:47
+      (none)   (none)   CON T LORENZO  SDFVM    NONE       45 11/04    20:47:24
+*/
+
+
+do i = 1 to stacked_new-stacked_old
+  parse pull from_executil.i
+  parse var  from_executil.i =1 spoolid.i =5 b1.i =6 class.i =7 b2.i =8 records.i ,
+    =14 b3.i =15 copies.i =17 b4.i =18 device.i =21 b5.i =22 hold.i =26 b6.i ,
+    =27 origin.i =35 b7.i =36 mm.i =38 s8.i =39 dd.i =41 s9.i =42 yy.i =44 b10.i ,
+    =45 hh_mm_ss.i =53 b11.i =54 distcode.i =62 b12.i =63 fname.i =71 b13 ,
+    =72 ftype.i =80 extra.i
+  records.i = right("      "||records.i+0,6)
+  copies.i  = right("  "||copies.i+0,2)
+  if (yy.i >= 70) then yyyy.i = yy.i + 1900; else yyyy.i = yy.i + 2000
+
+/*address "EE" "INPUT" from_executil.i */
+/*
+  address "EE" "INPUT" spoolid.i class.i records.i copies.i device.i hold.i origin.i" ",
+                       yyyy.i"-"mm.i"-"dd.i hh_mm_ss.i fname.i ftype.i distcode.i
+*/
+  if fname.i = "" then fname.i = "(none)  "
+  if ftype.i = "" then ftype.i = "(none)  "
+  node.i = local_node
+
+  /* has this spool file been sent from a remote node ? */
+  if origin.i = rscs_id then do
+    address "COMMAND" "EXECIOT" "1 CP ( VAR cp_tag_query STRING TAG QUERY FILE" spoolid.i
+/*  parse var cp_tag_query . =20 node.i =28 . =29 origin.i =37 . */
+    parse var cp_tag_query . =20 from_node =28 . =29 from_user =37 .
+    if strip(from_node) = "" then do; from_node = "*"; from_user = origin.i; end
+    if strip(from_user) = "" then do; from_user = "*";                       end
+    origin.i = left(from_user    || '        ',8)
+    node.i   = left(from_node    || '        ',8)
+  end
+
+
+
+/*
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....
+....+....1....+... SDFVM    LORENZO  ..4....+....5....+....6....+....7....+....8....
+CMS cp tag FILE 1752 ....+....1....+... SDFVM    LORENZO  ..4....+....5....+....6....+....7....+....8....
+CMS execio * cp (lifo string TAG QUERY FILE 1752
+
+ RDRLIST  EXEC     S2  V 130  Trunc=130 Size=216 Line=98 Col=1 Alt=0
+====>
+   98   &IF &ORG ^= &RSCS &GOTO -NOTAG
+   99   EXECIO 1 CP ( LIFO STRING TAG QUERY FILE &SPID
+  100 * VM18798 has modified the following 6 lines for blank USERIDS
+  101   &READ STRING  &T
+  102   &FROMNODE = &SUBSTR OF &T 20 8
+  103   &FROMUID = &SUBSTR OF &T 29 8
+  104   &IF .&FROMNODE  = . &FROMUID  = &ORG
+  105   &IF .&FROMNODE = . &FROMNODE = *
+*/
+
+
+  visible.i = fname.i ftype.i device.i class.i origin.i node.i hold.i records.i ,
+              yyyy.i"-"mm.i"-"dd.i hh_mm_ss.i spoolid.i copies.i distcode.i
+  shadow.i  = visible.i
+  address "EE" "INPUT" "     " visible.i shadow.i
+
+end
+address "COMMAND" "DROPBUF" new_buffer_id
+
+address "EE" "LOCATE :"line_old
+exit rc_executil
+
+novalue:
+exit 1000+sigl
+
+syntax:
+exit 2000+sigl
+
+
+
+/*
+
+/ * REXX * /
+parse arg a
+trace off
+address "COMMAND" "SENTRIES"
+stacked_old = rc
+address "COMMAND" "MAKEBUF"
+new_buffer_id = rc
+
+address "COMMAND" "LISTFILE" a "(LABEL ISODATE FIFO"
+rc_listfile = rc
+if rc_listfile <> 0 then do
+  address "COMMAND" "DROPBUF" new_buffer_id
+  exit rc_listfile
+end
+
+address "COMMAND" "SENTRIES"
+stacked_new = rc
+address "EE" "X LISTFILE LISTING A1"
+address "EE" "EXTRACT line"
+line_old = line.1
+do i = 1 to stacked_new-stacked_old
+  parse pull from_listfile
+  address "EE" "INPUT" from_listfile
+end
+address "COMMAND" "DROPBUF" new_buffer_id
+
+address "EE" "LOCATE :"line_old
+exit rc_listfile
+*/
+
+/*
+
+ LORENZO  FILELIST A0  V 108  Trunc=108 Size=4341 Line=1 Col=1 Alt=2
+Cmd   Filename Filetype Fm Format Lrecl    Records     Blocks   Date     Time
+*     ASCII    PIC      G2 F         80       1165         23  3/21/96 15:29:33
+      VMARC    MODULE   Y2 V      11896          3          3  6/04/91  9:53:54
+|...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....>
+      VMARC    LISTING  Y2 V         71       1197         13  6/04/91  9:52:55
+      RXUSERFN MODULE   Y2 V       1824          4          1  5/15/90 11:36:12
+      RXURIO   MODULE   Y2 V       2000          4          1  5/15/90 11:36:08
+      RXFS     MODULE   Y2 V      11056          4          3  5/15/90 11:36:03
+      RXFILEIO MODULE   Y2 V       4128          4          2  5/15/90 11:35:44
+      RXDATE   MODULE   Y2 V       3640          4          1  5/15/90 11:35:34
+      RXBIT    MODULE   Y2 V       2224          4          1  5/15/90 11:35:26
+      RXSTOR   MODULE   Y2 V       6072          4          2  5/15/90 11:35:21
+      RXUSERFN ASSEMBLE Y2 F         80        514         11  5/15/90 11:17:46
+      RXURIO   ASSEMBLE Y2 F         80        676         14  5/15/90 11:17:45
+      RXSTOR   ASSEMBLE Y2 F         80        879         18  5/15/90 11:17:41
+      RXFS     ASSEMBLE Y2 F         80       4367         86  5/15/90 11:17:40
+      RXFILEIO ASSEMBLE Y2 F         80       2654         52  5/15/90 11:17:36
+      RXDATE   ASSEMBLE Y2 F         80       1243         25  5/15/90 11:17:35
+      RXBIT    ASSEMBLE Y2 F         80        828         17  5/15/90 11:17:34
+      IPL      DDR      S2 F         80       1502         30  3/27/90 15:11:44
+      DDR      MODULE   S2 V      65535          3         22  3/27/90 15:11:35
+      DMSTPI   MODULE   S2 V      14416          3          4  3/27/90 10:26:41
+      TAPE     MODULE   S2 F       1904          1          1  3/27/90 10:26:32
+      LABELDEF MODULE   S2 F       4296          1          2  3/27/90 10:26:26
+      NOTE     EXEC     S2 F        138        639         22  3/20/90 11:28:13
+      SENDFILE EXEC     S2 V        106        860          7  3/20/90 11:27:05
+      TELL     EXEC     S2 V         73        187          2  3/20/90 11:25:03
+1= Help       2= Refresh  3= Quit   4= Sort(type)  5= Sort(date)  6= Sort(size)
+7= Backward   8= Forward  9= FL /n 10=            11= XEDIT      12= Cursor
+
+====> scale on 5
+                                                             X E D I T  1 File
+*/
+
+
+/*
+|...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....>
+FILENAME FILETYPE FM FORMAT LRECL       RECS     BLOCKS   DATE     TIME    LABEL
+A        ASSEMBLE A1 F         80          1          1  9/30/24 14:40:40 LOR191
+A        LISTING  A1 F        121         22          1  9/30/24 14:41:22 LOR191
+ALLXEDIT VMARC    A1 F         80         77          2  8/28/24  9:52:25 LOR191
+*/
+/*
+Ready; T=0.01/0.01 16:17:35
+listfile ee* module (l iso
+Filename Filetype Fm  Format    Recs Blocks     Date    Time   Label
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+EE$D     MODULE   A1  V 65535      6    338  2025-02-05 16:28  MCF191
+EE$D_OLD MODULE   A1  V 65535      6    327  2024-12-22 15:34  MCF191
+EE$S     MODULE   A1  V 65535      8    468  2025-02-05 16:28  MCF191
+EE$S_OLD MODULE   A1  V 65535      8    456  2024-12-22 15:34  MCF191
+Ready; T=0.01/0.01 16:17:52
+
+
+Cmd   Filename Filetype Fm  Format    Recs Blocks     Date    Time   Label
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+      EE$D     MODULE   A1  V 65535      6    338  2025-02-05 16:28  MCF191
+      EE$D_OLD MODULE   A1  V 65535      6    327  2024-12-22 15:34  MCF191
+      EE$S     MODULE   A1  V 65535      8    468  2025-02-05 16:28  MCF191
+      EE$S_OLD MODULE   A1  V 65535      8    456  2024-12-22 15:34  MCF191
+
+
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+Prefx Cmd   Filename Filetype Fm  Format    Recs Blocks     Date    Time   Label
+12345 ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+=====       EE$D     MODULE   A1  V 65535      6    338  2025-02-05 16:28  MCF191
+=====       EE$D_OLD MODULE   A1  V 65535      6    327  2024-12-22 15:34  MCF191
+=====       EE$S     MODULE   A1  V 65535      8    468  2025-02-05 16:28  MCF191
+=====       EE$S_OLD MODULE   A1  V 65535      8    456  2024-12-22 15:34  MCF191
+
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+Prefx Cmd   Filename Filetype Fm  Format    Recs Blocks     Date   Time  Label
+12345 ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+=====       EE$D     MODULE   A1  V 65535      6    338 2025-02-05 16:28 MCF191
+=====       EE$D_OLD MODULE   A1  V 65535      6    327 2024-12-22 15:34 MCF191
+=====       EE$S     MODULE   A1  V 65535      8    468 2025-02-05 16:28 MCF191
+=====       EE$S_OLD MODULE   A1  V 65535      8    456 2024-12-22 15:34 MCF191
+*/
+
+/*
+FSLIST: * * Y                                                                              Lines 76-103/713  FSLIST V1.3.2.0013_240930-2000
+....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+Prefx Cmd   Filename Filetype Fm  Format    Recs Blocks     Date    Time   Label
+12345 ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8
+      Filename Filetype Fm  Format    Recs Blocks  Date       Time   Label
+===== IEYALL   MODULE   Y2  V  7448      3     11  2018-06-19 07:14  MNT19E
+===== IEYEXT   MODULE   Y2  V  5656      3      9  2018-06-19 07:14  MNT19E
+===== IEYFORT  MODULE   Y2  V 15816      3     21  2018-06-19 07:14  MNT19E
+===== IEYGEN   MODULE   Y2  V 14896      3     20  2018-06-19 07:14  MNT19E
+
+
+
+FSLIST: * * Y                                                                              Lines 76-103/713  FSLIST V1.3.2.0013_240930-2000
+  Filename Filetype Fm  Format    Recs Blocks  Date       Time   Label
+===== IEYALL   MODULE   Y2  V  7448      3     11  2018-06-19 07:14  MNT19E
+===== IEYEXT   MODULE   Y2  V  5656      3      9  2018-06-19 07:14  MNT19E
+===== IEYFORT  MODULE   Y2  V 15816      3     21  2018-06-19 07:14  MNT19E
+===== IEYGEN   MODULE   Y2  V 14896      3     20  2018-06-19 07:14  MNT19E
+===== IEYPAR   MODULE   Y2  V 18952      3     25  2018-06-19 07:14  MNT19E
+===== IEYUNF   MODULE   Y2  V  3112      3      6  2018-06-19 07:14  MNT19E
+===== WATFIV   EXEC     Y2  V    80     77      3  2018-06-15 12:18  MNT19E
+===== WATFIV   MESSAGE  Y2  F    80    478     48  2018-06-15 12:19  MNT19E
+===== WATFIV   MODULE   Y2  V 65535      4    167  2018-06-15 12:18  MNT19E
+===== WATLIB   TXTLIB   Y2  F    80   3413    342  2018-06-15 12:18  MNT19E
+===== XRUNPARM TEXT     Y2  F    80     29      3  2018-05-12 08:50  MNT19E
+===== CPYFIL   MODULE   Y2  V 60048      3     80  2018-03-22 10:11  MNT19E
+===== GCC370   MODULE   Y2  V 65535     46   3653  2018-03-22 10:11  MNT19E
+===== GCC380   MODULE   Y2  V 65535     46   3654  2018-03-22 10:11  MNT19E
+===== HEXDUMP  MODULE   Y2  V 53960      3     72  2018-03-22 10:11  MNT19E
+===== MVSENDEC MODULE   Y2  V 57136      3     76  2018-03-22 10:11  MNT19E
+===== MVSUNZIP MODULE   Y2  V 58288      3     78  2018-03-22 10:11  MNT19E
+===== NAMCSECT MODULE   Y2  V 64512      3     87  2018-03-22 10:11  MNT19E
+===== PDPTEST  MODULE   Y2  V 52808      3     71  2018-03-22 10:11  MNT19E
+===== PASMATH  TXTLIB   Y2  F    80   1944    195  2018-02-04 11:30  MNT19E
+===== XRUNPARM MODULE   Y2  V  1296      3      2  2016-10-20 14:35  MNT19E
+===== EBCDIC   MEMO     Y2  V    52     14      1  2013-07-18 17:04  MNT19E
+===== SAMPLE   EE       Y2  V    60     52      2  2013-07-18 17:04  MNT19E
+===== SYSPROF_ EE       Y2  V    34      8      1  2013-07-18 17:04  MNT19E
+===== VISTA    IND$MAP  Y2  V    78    130      2  2013-07-18 17:04  MNT19E
+===== XLIST    EXEC     Y2  V    63     67      2  2013-07-18 17:04  MNT19E
+===== GCIC     MODULE   Y2  V 65535      6    268  2010-09-30 11:08  MNT19E
+===== GCIC     MSGTAB   Y2  F    80     19      2  2010-09-30 10:52  MNT19E
+===== GCIC     USERS    Y2  F    80     10      1  2010-09-30 20:40  MNT19E
+====>
+                               02=EE 03=Quit 04=Srch 05=Top 06=PgUp 07=Up 08=Down 09=PgDown 10=Bot 12=View
+*/

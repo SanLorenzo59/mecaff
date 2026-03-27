@@ -1,0 +1,179 @@
+/* REXX */
+
+address "EE"
+"extract /lscreen/"
+screen_width = lscreen.2
+
+/* we assume that prefix is on and 5 chars wide, left or right */
+workl = screen_width - 5 - 2 /* 2 cells for attributes */
+
+"ftdefaults c        V 255 M" workl
+"ftdefaults h        V 255 M" workl
+"ftdefaults ee       V 255 M" workl
+"ftdefaults exec     V 255 M" workl
+"ftdefaults pli      F  80 M  72"
+"ftdefaults assemble F  80 M  72"
+"fttabdefaults assemble 10 16 31 72"
+
+
+"cmdline top"
+"currline middle"
+"scale off"
+"infolines off"
+"number on"
+"tofeof on"
+"set case m i"
+
+"pf 01 ringprev"
+"pf 02 ringnext"
+"pf 03 quit"
+"pf 04 save"
+"PF 05 Next -10"
+"PF 06 Next  10"
+"PF 07 PGUP   -5"
+"PF 08 PGDOwn -5"
+"PF 09 SEArchnext"
+"PF 10 REVSEArchnext"
+"PF 11 SPLTJoin"
+"PF 11 SJ"
+"PF 12 RETRIEVE-"
+"PF 24 RETRIEVE+"
+
+
+
+"set color filearea green"
+"set color cmdline pink"
+"set color prefix blue"
+"set color cmdarrow turq"
+"set color tofeof yellow"
+"set color curline red underline nohigh ps0"
+"set color highlight yellow none"
+"set color chighlight yellow underline"
+"set color msgline red"
+"set color idline white"
+"set color statarea white"
+"set color infoline blue"
+
+
+
+
+"defaults put"
+
+/*
+"extract /fname/ftype/fmode/"
+"pf 11 view" "msg" fname.1 ftype.1 fmode.1
+*/
+
+
+/*
+SYSPROFO
+*subcom
+* define default filetypes
+ftdefaults c        V 255 M 125
+ftdefaults h        V 255 M 125
+ftdefaults ee       V 255 M 125
+ftdefaults exec     V 255 M 125
+ftdefaults assemble F 80 m 72
+fttabdefaults assemble 10 16 31 72
+ftdefaults pli      F 80 m 72
+*/
+
+
+/*
+cmdline top
+currline middle
+scale off
+infolines off
+number on
+tofeof on
+workl 125
+set case m i
+
+pf 01 ringprev
+pf 02 ringnext
+pf 03 quit
+pf 04 save
+PF 05 Next -10
+PF 06 Next  10
+PF 07 PGUP   -5
+PF 08 PGDOwn -5
+PF 09 SEArchnext
+PF 10 REVSEArchnext
+PF 11 SPLTJoin
+PF 11 SJ
+PF 12 RETRIEVE-
+PF 24 RETRIEVE+
+
+attr cmdline pink
+attr prefix blue
+attr cmdarrow turq
+set color curline red underline nohigh ps0
+set color highlight yellow none
+set color chighlight yellow underline
+set color msgline red
+set color idline white
+
+
+* define default filetypes
+ftdefaults c        V 255 M 125
+ftdefaults h        V 255 M 125
+ftdefaults ee       V 255 M 125
+ftdefaults exec     V 255 M 125
+ftdefaults assemble F 80 m 72
+fttabdefaults assemble 10 16 31 72
+ftdefaults pli      F 80 m 72
+
+defaults put
+
+*/
+
+
+
+/*
+cmdline top
+scale off
+infolines off
+number on
+tofeof on
+workl 125
+set case m i
+
+pf 01 ringprev
+pf 02 ringnext
+pf 03 quit
+pf 04 save
+PF 05 Next -10
+PF 06 Next  10
+PF 07 PGUP   -5
+PF 08 PGDOwn -5
+PF 09 SEArchnext
+PF 10 REVSEArchnext
+PF 11 SPLTJoin
+PF 11 SJ
+PF 12 RETRIEVE-
+PF 24 RETRIEVE+
+
+attr cmdline pink
+attr prefix blue
+attr cmdarrow turq
+set color curline red underline nohigh ps0
+set color highlight yellow none
+set color chighlight yellow underline
+set color msgline red
+set color idline white
+
+
+* define default filetypes
+ftdefaults c        V 255 M 125
+ftdefaults h        V 255 M 125
+ftdefaults ee       V 255 M 125
+ftdefaults exec     V 255 M 125
+ftdefaults assemble F 80 m 72
+fttabdefaults assemble 10 16 31 72
+ftdefaults pli      F 80 m 72
+
+defaults put
+
+*/
+
+

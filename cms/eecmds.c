@@ -1695,6 +1695,31 @@ static int CmdSplitjoin(ScreenPtr scr, char *params, char *msg) {
   return false;
 }
 
+static int CmdDefaults(ScreenPtr scr, char *params, char *msg) {
+  bool have_GetPut = false;
+  bool have_Put = false;
+  bool have_Get = false;
+
+  if (isAbbrev(params, "Get")) {
+    have_Get = have_GetPut = true;
+  }
+  if (isAbbrev(params, "Put")) {
+    have_Put = have_GetPut = true;
+  }
+
+  if (have_Get) {
+    memcpy(scr->ed->view, scr->view, sizeof(struct _publicView));
+    return 0;
+  } else if (have_Put) {
+    memcpy(scr->view, scr->ed->view, sizeof(struct _publicView));
+    return 0;
+  } else {
+    return 5;
+  }
+
+  return false;
+}
+
 static int CmdPf(ScreenPtr scr, char *params, char *msg) {
   int pfNo    = -1;
   int pfScope = PFSCOPE_GLOBAL;
@@ -4265,6 +4290,7 @@ static MyCmdDef eeCmds[] = {
   {"DELete"                  , &CmdDelete                           },
   {"DISPlay"                 , &CmdImpSet                           },
   {"DEBUG"                   , &CmdDebug                            },
+  {"DEFAULTS"                , &CmdDefaults                         },
   {"Eedit"                   , &CmdEditFile                         },
   {"EFMode"                  , &CmdImpSet                           },
   {"EFName"                  , &CmdImpSet                           },

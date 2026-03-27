@@ -33,7 +33,19 @@ upper fn
 upper ft
 upper fm
 
+"defaults get"
+
+"extract /fname/ftype/fmode/size/"
+
+if (ftype.1 = "RDRLIST") & (fname.1 = userid()) & (size.1 = 0) then do
+  "RDRLIST"
+  exit rc
+end
+
+
+/*
 "PREFIX LEFT"  ; "NUMBER ON"
+*/
 
 /*
 "PF 01 ringprev"
@@ -76,6 +88,9 @@ otherwise
     end
 end
 */
+
+
+/*
 "cmdline bottom"
 "infolines clear"
 "infolines top"
@@ -84,3 +99,4 @@ end
 "infolines add 3 :   infolines add 3 :  "
 "infolines add 4 :   infolines add 4 :  "
 "PF 23 QQ"
+*/

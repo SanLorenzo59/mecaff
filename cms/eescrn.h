@@ -177,6 +177,7 @@ typedef struct _eescreen_public {
     bool doBeep; /* do a beep when screen is written, automatic reset */
       /* data to be written */
     EditorPtr ed; /* the editor delivering data to be displayed */
+    struct _publicView *view; /* default 'view' structure if no editor is defined */
     PrefixMark prefixMarks[2]; /* no mark if forLine is NULL / empty prefill */
     char *cmdLinePrefill; /* pre-fill for cmdline if != NULL */
     char *msgText; /* up to 3 Textlines for (error)message area */

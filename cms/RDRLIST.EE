@@ -153,7 +153,7 @@ address "EE" "infolines add Prefx Cmd   Filename Filetype Class User  at Node   
 
 
 /*
-Cmd   Filename Filetype Class User  at Node     Hold Records    Date     Time
+Cmd   Filename Filetype Class User  at Node     Hold Records    Date     Time   SpID Cy Distcode
       AXSLINKS COPY     PUN A LORENZO  SDFVM    NONE      5 2024-12-25 01:24:44 1752  1 RSCS
 ....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+..
       (none)   (none)   CON T MECAFF   VM370CE  NONE   4874 2024-08-14 12:22:22 1588  1 MECAFF

@@ -196,9 +196,19 @@ ScreenPtr _scrmk(char *msgBuffer) {
       "Unable to allocate screen-object (size=%d)", sizeof(Screen));
     return NULL;
   }
-  /* all screen data is zeroed out, so set only non-zero default values */
   ScreenPublPtr pub = SCREENPUBL(screen);
   ScreenPrivPtr priv = SCREENPRIV(screen);
+
+  pub->view     = (ViewPtr) allocMem(sizeof(struct _publicView)); /* 2025-02-05 */
+  if (!pub->view) { /* OUT OF MEMORY */
+    sprintf(
+      msgBuffer,
+      "Unable to allocate screen sub-structure VIEW (size=%d)", sizeof(struct _publicView));
+    return NULL;
+  }
+  memset(pub->view, '\0', sizeof(struct _publicView));
+
+  /* all screen data is zeroed out, so set only non-zero default values */
   pub->yyy_cmdLinePos = 1;
 /*
   pub->prefixLen = 5;
@@ -241,6 +251,9 @@ ScreenPtr _scrmk(char *msgBuffer) {
 }
 
 void _scrfr(ScreenPtr screen) {
+  ScreenPublPtr pub = SCREENPUBL(screen);
+  ScreenPrivPtr priv = SCREENPRIV(screen);
+  if (pub->view) freeMem(pub->view);
   freeMem(screen);
 }
 
@@ -554,6 +567,7 @@ static int _scrio_inner(ScreenPtr screen) {
 
   int currRow = 0;
   SBA(currRow++, PGMB_loc->lastCol);
+
 /*
   / * infolines on top ? * /
   if (pub->infoLinesPos < 0) {
@@ -569,7 +583,26 @@ static int _scrio_inner(ScreenPtr screen) {
   /* commandline on top ? */
   if (pub->ed->view->cmdLinePos <= 0) {
     startField2(pub->ed->view->attrArrow, pub->ed->view->HiLitArrow, true, false);
-    appendString(PGMB_loc->cmdArrow);
+
+    SA_BGC(Color_Pink);
+    SA_C(Color_Red);
+    appendString("=");
+    SA_C(Color_Green);
+    appendString("=");
+    SA_C(Color_Blue);
+    appendString("=");
+    SA_C(Color_Yellow);
+    appendString("=");
+
+    SA_C(Color_Turquoise);
+    SA_H(HiLit_Blink);
+    appendString(">");
+    SA_C(Color_Default);
+    SA_BGC(Color_Default);
+    SA_H(HiLit_Default);
+
+
+    /* appendString(PGMB_loc->cmdArrow); */
     startField2(pub->ed->view->attrCmd + cmdLineModifier, pub->ed->view->HiLitCmd, pub->cmdLineReadOnly, false);
     GBA(&priv->cmdRow, &priv->cmdCol); /* remember position of command field */
     if (pub->cursorOffset == 0
