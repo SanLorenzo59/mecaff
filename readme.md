@@ -21,8 +21,8 @@ The files in this repository will probably be interesting only for users
 of VM/370-R6 SixPack 1.2 (or older), as this version originally did not
 provide fullscreen support for the console terminal of a VM. These users
 will however probably already know the MECAFF tools, as they were published
-first in the files area of the Yahoo H390-VM discussion group, the main exchange
-platform for VM/370 users.
+first in the files area of the [Yahoo H390-VM](https://h390-vm.yahoogroups.narkive.com)
+discussion group, the main exchange platform for VM/370 users.
 
 This repository is an alternative location for the tools, providing all releases
 of MECAFF (the group has only the newest version).
