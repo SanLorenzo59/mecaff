@@ -334,7 +334,7 @@ int put_cnv(
             continue; /* ignore CR */
           } else if (c == 0x0a) {
             /* LF: signal EOR => write line */
-            if (writer) { /* writer is NULL in TST-mode */
+            if (writer && currLineLen > 0) { /* writer is NULL in TST-mode */
               (*writer)(currLineLen);
               ob = ob0;
               obuf_len = ob_len;
