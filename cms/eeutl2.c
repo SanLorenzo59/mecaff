@@ -137,9 +137,7 @@ bool doCmdFil(CmdLineHandler handler, void *userdata, char *fn, int *rc) {
   int mergedRest = 0;
   char *merged = NULL;
  
-  memcpy(buffer, '\0', sizeof(buffer));
- 
-  memcpy(buffer, '\0', sizeof(buffer));
+  memset(buffer, '\0', sizeof(buffer));
   strncpy(buffer, fn, 8);
   sprintf(fspec, "%s EE * V 255", buffer);
  
@@ -178,9 +176,10 @@ bool doCmdFil(CmdLineHandler handler, void *userdata, char *fn, int *rc) {
       len = minInt(len, mergedRest);
       if (len > 0) {
         memcpy(merged, line, len);
+        merged += len;
       }
       line = mergedLines;
-      len = 1;
+      len = merged - mergedLines;
     }
  
     if (len > 0 && *line != '*') {
